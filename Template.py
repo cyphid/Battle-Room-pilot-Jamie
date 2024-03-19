@@ -1,4 +1,5 @@
 import typing
+from GameStateClasses import (Position, GameState, Game, Ruleset, Board, Snake, Customisations)
 
 def move(game_state: typing.Dict = None) -> typing.Dict:
   if game_state is None:

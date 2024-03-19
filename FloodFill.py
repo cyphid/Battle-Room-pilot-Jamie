@@ -12,6 +12,8 @@ def move(game_state: typing.Dict = None) -> typing.Dict:
 
   # your function should return a dictionary with the following keys:
 
+
+  
   return {"up": 0,
           "down": 0,
           "left": 0,

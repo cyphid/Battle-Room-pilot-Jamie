@@ -117,7 +117,7 @@ example_game_state = {
     }
   }
 }
-irreleventFiles = ("main.py", "Template.py", "test.py", "GameStateClasses.py", "server.py")
+irreleventFiles = ("main.py", "Template.py", "test.py", "GameStateClasses.py", "server.py", "FloodFill.py")
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -156,24 +156,48 @@ def end(game_state: typing.Dict):
 # Valid moves are "up", "down", "left", or "right"
 # See https://docs.battlesnake.com/api/example-move for available data
 
+def get_recommendations(game_state: typing.Dict, algorithmModules: typing.Dict) -> typing.List[typing.Dict]:
+    recommendations = []
+    for module in algorithmModules.values():
+        if hasattr(module, "move"):
+            recommendations.append(module.move(game_state))
+    return recommendations
+
+def aggregate_recommendations(recommendations: typing.List[typing.Dict]) -> typing.Dict:
+    viable_moves = {"up": 0, "down": 0, "left": 0, "right": 0}
+    for direction in viable_moves.keys():
+        viable_moves[direction] = sum(move[direction] for move in recommendations)
+    return viable_moves
+
+def softmax_dict(viable_moves: typing.Dict) -> typing.Dict:
+    viable_moves = {key: np.exp(value) for key, value in viable_moves.items()}
+    original_sum = sum(viable_moves.values())
+    for direction in viable_moves.keys():
+        viable_moves[direction] /= original_sum
+    return viable_moves
+
+def print_probabilities(viable_moves: typing.Dict):
+    for move, probability in viable_moves.items():
+        print(f"{move}: {probability:.3f}", end=" ")
+
+def choose_move(viable_moves: typing.Dict) -> str:
+    return random.choices(tuple(viable_moves.keys()), weights=tuple(viable_moves.values()))[0]
+
 def move(game_state: typing.Dict = None) -> typing.Dict:
+  global algorithmModules
+  # For testing purposes  
   if game_state is None:
-    game_state = example_game_state
-  recommendations = []
-  viable_moves = {"up": 0, "down": 0, "left": 0, "right": 0}
-  for module in algorithmModules.values():
-    recommendations.append(module.move(game_state))
-  for dir in viable_moves.keys():
-    viable_moves[dir] = sum(i[dir] for i in recommendations)
-  viable_moves = {key:np.exp(value) for key,value in viable_moves.items()}
-  original_sum = sum(viable_moves.values())
-  for dir in viable_moves.keys():
-    viable_moves[dir] /= original_sum
-  for move, probability in viable_moves.items():
-    print(f"{move}: {probability:.3f}", end=" ")
-  our_move = random.choices(tuple(viable_moves.keys()), weights=tuple(viable_moves.values()))[0]
-  print("🎲-> " + our_move)
+        game_state = example_game_state
+
+  recommendations = get_recommendations(game_state, algorithmModules)
+  aggregated_scores = aggregate_recommendations(recommendations)
+  probabilities = softmax_dict(aggregated_scores)
+  print_probabilities(probabilities)
+  our_move = choose_move(probabilities)
+  print(" 🎲-> " + our_move)
+
   return {"move": our_move}
+
 
 # Start server when `python main.py` is run
 if __name__ == "__main__":

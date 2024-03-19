@@ -35,6 +35,18 @@ class Position:
   def __abs__(self):
     return abs(self.x) + abs(self.y)
 
+  def __eq__(self, other):
+    if isinstance(other, Position):
+      return self.x == other.x and self.y == other.y
+    elif isinstance(other, typing.Tuple) or isinstance(other, typing.List):
+      return self.x == other[0] and self.y == other[1]
+    elif isinstance(other, typing.Dict):
+      return self.x == other["x"] and self.y == other["y"]
+    else:
+      raise TypeError(
+          f"unsupported operand type(s) for ==: 'Position' and '{type(other)}'"
+      )
+
 
 @dataclass(order=False, frozen=True)
 class Customisations:
@@ -74,6 +86,29 @@ class Snake:
     else:
       raise TypeError(
           f"unsupported operand type(s) for ==: 'Snake' and '{type(other)}'")
+
+  def get_next_head(self, move) -> typing.Dict:
+    """
+    Calculates the next position based on the current head position and move direction.
+  
+    Args:
+        move (str): The move direction ('up', 'down', 'left', 'right').
+  
+    Returns:
+        dict: The next position of the head after making the move.
+    """
+    new_head = {'x': self.head.x, 'y': self.head.y}
+
+    if move == 'up':
+      new_head.y += 1
+    elif move == 'down':
+      new_head.y -= 1
+    elif move == 'left':
+      new_head.x -= 1
+    elif move== 'right':
+      new_head.x += 1
+
+    return new_head
 
 
 @dataclass(order=False)
