@@ -10,6 +10,9 @@ class Position:
   def __str__(self) -> str:
     return f"({self.x}, {self.y})"
 
+  def __repr__(self) -> None:
+    return str(self)
+
   def __add__(self, other):
     if isinstance(other, Position):
       return Position(self.x + other.x, self.y + other.y)
