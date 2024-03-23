@@ -10,7 +10,21 @@ def move(game_state: typing.Dict = None) -> typing.Dict:
            }
 
 
-  # your function should return a dictionary with the following keys:
+  all_cells = {}
+  for x in range(game_state.board.width):
+    for y in range(game_state.board.height):
+      all_cells[(game_state.Position(x, y))
+
+  #find all walls
+  walls = []
+  for snake in game_state.board.snakes:
+    for pos in snake.body:
+      posx = pos.x
+      posy = pos.y
+      walls.append(game_state.Position(posx, posy))
+
+  # start_actual_alg
+  
 
 
   

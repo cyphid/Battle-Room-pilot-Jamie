@@ -117,7 +117,7 @@ example_game_state = {
     }
   }
 }
-irreleventFiles = ("main.py", "Template.py", "test.py", "GameStateClasses.py", "server.py", "FloodFill.py")
+irreleventFiles = ("main.py", "Template.py", "test.py", "GameStateClasses.py", "server.py", "FloodFill.py", "__init__.py")
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -125,14 +125,34 @@ irreleventFiles = ("main.py", "Template.py", "test.py", "GameStateClasses.py", "
 # TIP: If you open your Battlesnake URL in a browser you should see this data
 
 # 
-def instantiate_modules() -> typing.Tuple:
+
+def instantiate_modules() -> typing.Dict:
   files = [file[:-3] for file in os.listdir() if ".py" in file and file not in irreleventFiles]
+  
   modulesDict = {file:None for file in files}
   for file in files:
     modulesDict[file] = importlib.import_module(file)
     print(f"successfully imported {file}")
     print(f"{modulesDict[file]}")
   return modulesDict
+
+
+'''def instantiate_modules() -> typing.Dict:
+  filenames = os.listdir("./modules")
+  if "__init__.py" in filenames:
+      filenames.remove("__init__.py")
+  if "FloodFill.py" in filenames:
+    filenames.remove("FloodFill.py")
+  files = {}
+  for filename in filenames:
+    if filename.endswith(".py"):
+      module_name = filename[:-3]  # Remove the '.py' extension
+      try:
+          module_obj = importlib.import_module(f"modules.{module_name}")
+          files[module_name] = module_obj  # Add to the dictionary
+      except ImportError:
+          print(f"Failed to import {filename}")
+  return files'''
 
 def info() -> typing.Dict:
   print("INFO")
